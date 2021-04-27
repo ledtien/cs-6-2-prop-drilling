@@ -5,10 +5,10 @@
 .comment-bubble {
   padding: 1rem;
   overflow: hidden;
-  border-radius: 1rem;
+  border-radius: 2rem;
   display: inline-block;
-	-webkit-border-radius: 1rem;
-  background-color: #F0F2F5;
+  -webkit-border-radius: 1rem;
+  background-color: #98a7bb;
 }
 
 .comment-bubble > p {
