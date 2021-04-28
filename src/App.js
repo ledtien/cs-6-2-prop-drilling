@@ -12,6 +12,8 @@ import {
   FormControl,
   ListGroupItem,
 } from "react-bootstrap";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import Modal from "react-modal";
 import { ThemeProvider } from "styled-components";
 import { lightTheme, darkTheme } from "./theme";
@@ -35,13 +37,14 @@ const Avatar = (props) => {
 };
 
 const PostForm = (props) => {
+  const email = useSelector((state) => state.currentUser.email);
   return (
     <Form inline className="d-flex align-items-center">
       <Form.Control
         type="text"
         className="mr-3"
         style={{ width: "90%" }}
-        placeholder={"What's on your mind? " + props.currentUser.email}
+        placeholder={"What's on your mind? " + email}
       />
       <Button variant="primary" type="submit">
         Post!
@@ -51,11 +54,12 @@ const PostForm = (props) => {
 };
 
 const CommentForm = (props) => {
+  const email = useSelector((state) => state.currentUser.email);
   return (
     <Form inline>
       <Form.Control
         type="text"
-        placeholder={"What's on your mind? " + props.currentUser.email}
+        placeholder={"What's on your mind? " + email}
         className="w-75 mr-3"
       />
       <Button variant="primary" type="submit">
@@ -93,6 +97,7 @@ const Comments = (props) => {
 };
 
 const Post = (props) => {
+  const email = useSelector((state) => state.currentUser.email);
   return (
     <Card style={{ width: "100%", padding: "1%" }}>
       <Card.Title>PrimeTimeTran</Card.Title>
@@ -106,7 +111,7 @@ const Post = (props) => {
       />
       <Card.Body>
         <Comments comments={COMMENTS} />
-        <CommentForm currentUser={props.currentUser} />
+        <CommentForm currentUser={email} />
       </Card.Body>
     </Card>
   );
@@ -114,6 +119,13 @@ const Post = (props) => {
 
 const Navbarr = (props) => {
   const [email, setEmail] = useState("");
+  const currentUser = useSelector((state) => state.currentUser);
+  const dispatch = useDispatch();
+
+  const onSignIn = (e) => {
+    e.preventDefault();
+    dispatch({ type: "SIGN_IN", payload: email });
+  };
 
   return (
     <Navbar bg="light" expand="lg">
@@ -124,16 +136,16 @@ const Navbarr = (props) => {
           <Nav.Link href="#home">Home</Nav.Link>
           <Nav.Link href="#link">Link</Nav.Link>
         </Nav>
-        {props.currentUser.email ? (
+        {currentUser.email ? (
           <Button
             type="submit"
             variant="outline-danger"
-            onClick={props.onSignOut}
+            onClick={() => dispatch({ type: "SIGN_OUT" })}
           >
-            Sign-out {props.currentUser.email}?
+            Sign-out {currentUser.email}?
           </Button>
         ) : (
-          <Form inline onSubmit={(e) => props.onSignIn(e, email)}>
+          <Form inline onSubmit={onSignIn}>
             <FormControl
               type="text"
               placeholder="Email"
@@ -141,11 +153,7 @@ const Navbarr = (props) => {
               onChange={(e) => setEmail(e.target.value)}
               value={email}
             />
-            <Button
-              type="submit"
-              variant="outline-success"
-              onClick={(e) => props.onSignIn(e, email)}
-            >
+            <Button type="submit" variant="outline-success" onClick={onSignIn}>
               Sign In
             </Button>
           </Form>
@@ -189,6 +197,13 @@ const Intro = (props) => {
 };
 
 const Left = (props) => {
+  const [email, setEmail] = useState("");
+  const dispatch = useDispatch();
+
+  const onSignIn = (e) => {
+    e.preventDefault();
+    dispatch({ type: "SIGN_IN", payload: email });
+  };
   const [open, setOpen] = useState(false);
   const customStyles = {
     content: {
@@ -219,8 +234,8 @@ const Left = (props) => {
         contentLabel="Example Modal"
       >
         <div>Change my email!</div>
-        <form onSubmit={props.editEmail}>
-          <input onChange={props.editEmail} />
+        <form onSubmit={onSignIn}>
+          <input onChange={(e) => setEmail(e.target.value)} value={email} />
         </form>
       </Modal>
     </Col>
@@ -298,4 +313,36 @@ function App() {
   );
 }
 
+// function App() {
+//   const [count, setCount] = useState(1);
+//   const dispatch = useDispatch();
+//   const state = useSelector((state) => state);
+//   const [incrementAmount, setIncrementAmount] = useState(1);
+//   console.log(incrementAmount);
+//   return (
+//     <div>
+//       <h1>New App components</h1>
+//       <h3>Count: {state.count}</h3>
+//       <button onClick={() => dispatch({ type: "INCREMENT" })}>
+//         Increment by 1
+//       </button>
+//       <button onClick={() => dispatch({ type: "DECREMENT" })}>
+//         Decrement by 1
+//       </button>
+//       <input
+//         value={incrementAmount}
+//         onChange={(e) => setIncrementAmount(parseInt(e.target.value))}
+//       ></input>
+//       <button
+//         onClick={() =>
+//           dispatch({ type: "INCREMENT_BY", payload: incrementAmount })
+//         }
+//       >
+//         Increment by {incrementAmount}
+//       </button>
+//       {/* <button onClick={() => setCount(count + 1)}>Increment by 1</button>
+//       <button onClick={() => setCount(count - 1)}>Decrement by 1</button> */}
+//     </div>
+//   );
+// }
 export default App;
